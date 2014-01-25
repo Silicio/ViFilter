@@ -1,0 +1,6 @@
+# depslib dependency file v1.0
+1367571061 source:p:\programmi in c\vifilter\vifilter.c
+	<stdio.h>
+	<stdlib.h>
+	<windows.h>
+

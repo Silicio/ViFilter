@@ -4,6 +4,8 @@
 
 #define MAX_BUFFER_SIZE 	1024
 #define MAX_FILENAME_SIZE 	64
+#define _YES                 1
+#define _NO                  0
 
 /*
 *  PARAMETRI:
@@ -29,6 +31,7 @@ int main (int argc, char *argv[]){
   int fi_key_pos;
   int fc_key_pos;
   int key_len;
+  int inverti = _NO;
   float rowcounter;
   float totalrows;
   float progress;
@@ -36,9 +39,9 @@ int main (int argc, char *argv[]){
   FILE *f_check = NULL;
   FILE *f_out = NULL;
 
-  if (argc != 7){
+  if (argc != 7 && argc != 8){
     /*printf("\nViFilter ver. %s\n", AutoVersion::UBUNTU_VERSION_STYLE);*/
-    printf("\nUsage: vifilter.exe <FILE_INPUT> <FI_KEY_POS> <KEY_LEN> <FILE_CHECK> <FC_KEY_POS> <FILE_OUT>\n");
+    printf("\nUsage: vifilter.exe <FILE_INPUT> <FI_KEY_POS> <KEY_LEN> <FILE_CHECK> <FC_KEY_POS> <FILE_OUT> [-i]\n");
     printf("Verificare i parametri\n");
     exit(EXIT_FAILURE);
   }
@@ -50,10 +53,12 @@ start:
   fi_key_pos = atoi(argv[2]);
   fc_key_pos = atoi(argv[5]);
   key_len = atoi( argv[3] );
+  if (argc == 8){
+    if ( strcmp(argv[7], "-i") == 0 || strcmp(argv[7], "-I") == 0 ) inverti = _YES;
+  }
 
   char fi_key[ key_len ];
   char fc_key[ key_len ];
-
 
    /*else printf("Booo!");*/
 
@@ -106,11 +111,18 @@ start:
          strncpy(fc_key, &file_check_buffer[ fc_key_pos - 1 ], key_len);
          fc_key[ key_len ] = '\0';
         /* printf("%s %s\n", fi_key, fc_key);*/
-         if( strcmp(fi_key, fc_key) == 0 ){
-           /* printf("TROVATO %s\n", fi_key);*/
+        if (inverti == _NO){
+          if( strcmp(fi_key, fc_key) == 0 ){
             fputs(file_in_buffer, f_out);
             break;
-         }
+          }
+        }
+        else { //TODO: Questo caso non funziona correttamente
+          if( strcmp(fi_key, fc_key) != 0 ){
+            fputs(file_in_buffer, f_out);
+            break;
+          }
+        }
          /*else printf("MANCANTE %s\n", fi_key);*/
       }
       rewind(f_check);
